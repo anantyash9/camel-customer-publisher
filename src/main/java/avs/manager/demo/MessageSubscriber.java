@@ -16,6 +16,7 @@
  */
 package avs.manager.demo;
 
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,7 +41,12 @@ public class MessageSubscriber extends RouteBuilder {
                 // and call the bean
 //        .to("micrometer:timer:simple.timer?action=start")
 //        .transform(body().append(simple("${in.header.GooglePubsubConstants.MESSAGE_ID}")))
-        .to("stream:out");
+//        .log(LoggingLevel.INFO, "${in.headers.CamelGooglePubsub.PublishTime}")
+        
+        .bean(processorBean,"checkSequence")
+        .to("log:Throughput Logger?level=INFO&groupInterval=10000&groupDelay=60000&groupActiveOnly=false");
+//        .to("log:INFO?showBody=false&showHeaders=true");
+//        .to("stream:out");
 //        .to("micrometer:timer:simple.timer?action=stop")
 //        .to("micrometer:counter:MessageCount");
 
