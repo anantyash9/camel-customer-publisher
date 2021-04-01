@@ -18,6 +18,7 @@ package avs.manager.demo;
 
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.google.pubsub.GooglePubsubConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +29,7 @@ import org.springframework.stereotype.Component;
  * Use <tt>@Component</tt> to make Camel auto detect this route when starting.
  */
 @Component
-public class MessageSubscriber extends RouteBuilder {
+public class CustomerRoute extends RouteBuilder {
 
     // we can use spring dependency injection
     @Autowired
@@ -37,13 +38,14 @@ public class MessageSubscriber extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         // start from a timer
-        from("{{google-pubsub-sub}}").routeId("subscriber")
+        from("{{google-pubsub-subscription}}").routeId("subscriber")
                 // and call the bean
 //        .to("micrometer:timer:simple.timer?action=start")
 //        .transform(body().append(simple("${in.header.GooglePubsubConstants.MESSAGE_ID}")))
 //        .log(LoggingLevel.INFO, "${in.headers.CamelGooglePubsub.PublishTime}")
-        
-        .bean(processorBean,"checkSequence")
+        .bean(processorBean,"addTimestamp")
+        .setHeader(GooglePubsubConstants.ORDERING_KEY,method(processorBean,"getCarrier")) 
+        .toD("{{pub-sub-prefix}}{{pub-sub-customer}}{{pub-sub-parameters}}")
         .to("log:Throughput Logger?level=INFO&groupInterval=10000&groupDelay=60000&groupActiveOnly=false");
 //        .to("log:INFO?showBody=false&showHeaders=true");
 //        .to("stream:out");

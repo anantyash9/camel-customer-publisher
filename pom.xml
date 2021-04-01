@@ -81,7 +81,7 @@
         <version>2.8.0</version>
         <configuration>
   <to>
-    <image>docker.io/anant9/simple-camel-subscriber</image>
+    <image>docker.io/anant9/camel-customer-publisher</image>
   </to>
 </configuration>
       </plugin>

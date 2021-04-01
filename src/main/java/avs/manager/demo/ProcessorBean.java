@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import com.google.protobuf.Timestamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import java.util.Date;
 
 @Component("ProcessorBean")
 public class ProcessorBean {
@@ -33,8 +33,16 @@ public class ProcessorBean {
     		LOGGER.log(Level.INFO,"Total Messages out of order "+count);
     		
     	}
+
     		
     	}
-    	
+	public String addTimestamp(String body) {
+		Date date = new Date();
+		return body+"\noutboundTimestampMillis:"+date.getTime();
+	}
+    public String getCarrier(String body) {
+    	String lines[] = body.split("\\r?\\n");
+        return lines[3].substring(0,2);
+    } 	
 
 }
