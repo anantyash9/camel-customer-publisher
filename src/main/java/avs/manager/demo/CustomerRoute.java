@@ -39,18 +39,10 @@ public class CustomerRoute extends RouteBuilder {
     public void configure() throws Exception {
         // start from a timer
         from("{{google-pubsub-subscription}}").routeId("subscriber")
-                // and call the bean
-//        .to("micrometer:timer:simple.timer?action=start")
-//        .transform(body().append(simple("${in.header.GooglePubsubConstants.MESSAGE_ID}")))
-//        .log(LoggingLevel.INFO, "${in.headers.CamelGooglePubsub.PublishTime}")
         .bean(processorBean,"addTimestamp")
         .setHeader(GooglePubsubConstants.ORDERING_KEY,method(processorBean,"getCarrier")) 
         .toD("{{pub-sub-prefix}}{{pub-sub-customer}}{{pub-sub-parameters}}")
         .to("log:Throughput Logger?level=INFO&groupInterval=10000&groupDelay=60000&groupActiveOnly=false");
-//        .to("log:INFO?showBody=false&showHeaders=true");
-//        .to("stream:out");
-//        .to("micrometer:timer:simple.timer?action=stop")
-//        .to("micrometer:counter:MessageCount");
 
     }
 

@@ -1,6 +1,5 @@
 package avs.manager.demo;
 
-import java.util.Random;
 
 import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
@@ -36,9 +35,12 @@ public class ProcessorBean {
 
     		
     	}
-	public String addTimestamp(String body) {
+	public String addTimestamp(String body,Exchange exchange) {
 		Date date = new Date();
-		return body+"\noutboundTimestampMillis:"+date.getTime();
+		Timestamp temp =(Timestamp) exchange.getIn().getHeader("CamelGooglePubsub.PublishTime");
+		long publishtime=(long) ((long) temp.getSeconds()+temp.getNanos()*1e-9);
+		body=body+"\navsPublisherConsumedTimeStampMillis:"+date.getTime();
+		return body+"\navsSubscriberpublishedTimeStampMillis:"+publishtime;
 	}
     public String getCarrier(String body) {
     	String lines[] = body.split("\\r?\\n");
